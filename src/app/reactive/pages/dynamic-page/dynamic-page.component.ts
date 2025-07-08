@@ -4,6 +4,7 @@ import { Component, inject } from '@angular/core';
 import {
   FormArray,
   FormBuilder,
+  FormControl,
   FormGroup,
   ReactiveFormsModule,
   Validators,
@@ -25,11 +26,30 @@ export class DynamicPageComponent {
         ['Metal Gear', Validators.required],
         ['Death Stranding', Validators.required],
       ],
-      [Validators.minLength(3)]
+      [Validators.minLength(2)]
     ),
   });
 
+  newFavorite = new FormControl('', Validators.required);
+
   get favoriteGames() {
     return this.myForm.get('favoriteGames') as FormArray;
+  }
+
+  onAddToFavorites() {
+    if (this.newFavorite.invalid) return;
+    const newGame = this.newFavorite.value;
+    this.favoriteGames.push(this.fb.control(newGame, Validators.required));
+    this.newFavorite.reset();
+  }
+
+  onDeleteFavorite(index: number) {
+    this.favoriteGames.removeAt(index);
+  }
+
+  onSubmit() {
+    if (!this.myForm.valid) return;
+    console.log(this.myForm.value);
+    this.myForm.markAllAsTouched();
   }
 }
