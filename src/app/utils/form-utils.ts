@@ -1,4 +1,17 @@
-import { FormArray, FormGroup, ValidationErrors } from '@angular/forms';
+import {
+  AbstractControl,
+  FormArray,
+  FormGroup,
+  ValidationErrors,
+} from '@angular/forms';
+
+async function sleep() {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(true);
+    }, 2500);
+  });
+}
 
 export class FormUtils {
   // Expresiones regulares
@@ -18,14 +31,17 @@ export class FormUtils {
         case 'min':
           return `Valor mínimo de ${errors['min'].min}`;
 
+        case 'email':
+          return `El valor ingresado no es un correo eléctronico`;
+
+        case 'emailTaken':
+          return `El correo eléctronico ya está siendo usado por otro usuario`;
+
         case 'pattern':
           if (errors['pattern'].requiredPattern === FormUtils.emailPattern) {
             return `El valor ingresado no luce como un correo electrónico`;
           }
           return `Error de patrón contra expresión regular`;
-
-        case 'email':
-          return `El valor ingresado no es un correo eléctronico`;
 
         default:
           return `Error de validación no controlado ${key}`;
@@ -61,5 +77,36 @@ export class FormUtils {
     if (formArray.controls.length === 0) return null;
     const errors = formArray.controls[index].errors ?? {};
     return this.getTextError(errors);
+  }
+
+  static isFieldOneEqualFieldTwo(field1: string, field2: string) {
+    return (formGroup: AbstractControl): {} | null => {
+      const field1Value = formGroup.get(field1)?.value;
+      const field2Value = formGroup.get(field2)?.value;
+
+      return field1Value === field2Value
+        ? null
+        : {
+            passwordNotEqual: true,
+          };
+    };
+  }
+
+  static async checkingServerResponse(
+    control: AbstractControl
+  ): Promise<ValidationErrors | null> {
+    console.log('Validando contra servidor');
+
+    await sleep(); //2 segundos y medio
+
+    const formValue = control.value;
+
+    if (formValue === 'hola@mundo.com') {
+      return {
+        emailTaken: true,
+      };
+    }
+
+    return null;
   }
 }

@@ -27,6 +27,7 @@ export class RegisterPageComponent {
       email: [
         '',
         [Validators.required, Validators.pattern(FormUtils.emailPattern)],
+        [FormUtils.checkingServerResponse],
       ],
       userName: [
         '',
@@ -40,22 +41,11 @@ export class RegisterPageComponent {
       confirmPassword: ['', Validators.required],
     },
     {
-      validators: [this.isFieldOneEqualFieldTwo('password', 'confirmPassword')],
+      validators: [
+        FormUtils.isFieldOneEqualFieldTwo('password', 'confirmPassword'),
+      ],
     }
   );
-
-  isFieldOneEqualFieldTwo(field1: string, field2: string): {} | null {
-    return (formGroup: AbstractControl): {} | null => {
-      const field1Value = formGroup.get(field1)?.value;
-      const field2Value = formGroup.get(field2)?.value;
-
-      return field1Value === field2Value
-        ? null
-        : {
-            passwordNotEqual: true,
-          };
-    };
-  }
 
   onSubmit() {
     this.myForm.markAllAsTouched();
