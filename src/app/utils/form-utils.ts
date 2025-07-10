@@ -7,8 +7,6 @@ export class FormUtils {
   static notOnlySpacesPattern = '^[a-zA-Z0-9]+$';
 
   static getTextError(errors: ValidationErrors): string | null {
-    console.log(errors);
-
     for (const key of Object.keys(errors)) {
       switch (key) {
         case 'required':
